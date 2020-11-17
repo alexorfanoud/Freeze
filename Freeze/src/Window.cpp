@@ -4,7 +4,8 @@
 
 namespace Freeze {
     Window::Window(unsigned int width, unsigned int height, std::string title)
-    : m_Width(width), m_Height(height), m_DisplayTitle(title)
+    : m_Width(width), m_Height(height), m_DisplayTitle(title),
+    m_WindowData({width, height })
     {
         int status = Init();
         ASSERT(status != -1);
@@ -24,7 +25,64 @@ namespace Freeze {
             return -1;
         }
         glfwMakeContextCurrent(m_Window);
+
+        glfwSetWindowUserPointer(m_Window, &m_WindowData);
+        SetCallbacks();
+
         return 0;
+    }
+    void Window::SetCallbacks(){
+        //MouseMovement
+        glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos){
+            MouseMoveEvent event(xpos, ypos);
+            auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            ASSERT(data->OnEvent, "OnEvent function not defined.");
+            data->OnEvent(event);
+        });
+        //WindowClose
+        glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window){
+            WindowCloseEvent event;
+            auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            ASSERT(data->OnEvent, "OnEvent function not defined.");
+            data->OnEvent(event);
+        });
+        //WindowResize
+        glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height){
+            WindowResizeEvent event(width, height);
+            auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            ASSERT(data->OnEvent, "OnEvent function not defined.");
+            data->OnEvent(event);
+        });
+        //KeyInputs
+        glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
+            auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            ASSERT(data->OnEvent, "OnEvent function not defined.");
+            switch (action)
+            {
+            case GLFW_PRESS:
+            {
+                KeyPressedEvent event(key, 0);
+                data->OnEvent(event);
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+                KeyReleasedEvent event(key);
+                data->OnEvent(event);
+                break;
+            }
+            case GLFW_REPEAT:
+            {
+                KeyPressedEvent event(key, 1);
+                data->OnEvent(event);
+                break;
+            }
+            default:
+            {
+                break;
+            }
+            }
+        });
     }
     void Window::Shutdown()
     {
@@ -42,4 +100,5 @@ namespace Freeze {
         /* Poll for and process events */
         glfwPollEvents();
     }
+
 }
