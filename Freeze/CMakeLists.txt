@@ -7,6 +7,7 @@ set(vendor_dir "${FreezeDir}/vendor")
 file(GLOB src_files 
     "${FreezeDir}/src/*.cpp"
     "${FreezeDir}/src/EventSystem/*.cpp"
+    "${FreezeDir}/vendor/glad/src/glad.c"
     )
 file(GLOB header_files 
     "${FreezeDir}/src/*.hpp"
@@ -38,6 +39,7 @@ target_include_directories(FreezeLib PRIVATE
      "${FreezeDir}"
      "${vendor_dir}/spdlog/include"
      "${vendor_dir}/glfw/include"
+     "${vendor_dir}/glad/include"
      )
 
 #Precompiled Headers ------Requires CMAKE 3.16 OR HIGHER----------

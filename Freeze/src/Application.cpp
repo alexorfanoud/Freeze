@@ -1,3 +1,5 @@
+#include "glad/glad.h"
+
 #include "Application.hpp"
 #include "Core.hpp"
 #include "spdlog/spdlog.h"
@@ -56,10 +58,10 @@ namespace Freeze
     }
 
     Application::Application()
-    :m_Running(true)
+    :m_Running(true),
+    m_Window(new Window())
     {
-        SetEventListeners();
-        m_Window = new Window();
+        Init();
     }
     Application::~Application()
     {
@@ -76,6 +78,16 @@ namespace Freeze
         while (m_Running)
         {
             m_Window->Update();
+            
+        }
+    }
+
+    void Application::Init(){
+        SetEventListeners();
+        if (!gladLoadGL())
+        {
+            printf("Something went wrong!\n");
+            exit(-1);
         }
     }
 

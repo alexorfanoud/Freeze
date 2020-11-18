@@ -17,6 +17,7 @@ namespace Freeze
         Window* m_Window;
     private:
         void Shutdown();
+        void Init();
         bool OnMouseMove(MouseMoveEvent& ev);
         bool OnMouseClick(MouseClickEvent& ev);
         bool OnMouseRelease(MouseReleaseEvent& ev);
