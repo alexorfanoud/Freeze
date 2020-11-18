@@ -14,5 +14,25 @@ namespace Freeze{
     private:
        double m_Xpos, m_Ypos; 
     };
+
+    class MouseClickEvent : public Event{
+    public:
+        MouseClickEvent(int button): m_Button(button){};
+        inline int GetKeyCode() const { return m_Button; }
+        
+        EVENT_TYPE(EventType::MouseClick);
+    private:
+        int m_Button;
+    };
+
+    class MouseReleaseEvent : public Event{
+    public:
+        MouseReleaseEvent(int button) : m_Button(button) {};
+        inline int GetKeyCode() const { return m_Button; }
+
+        EVENT_TYPE(EventType::MouseRelease);
+    private:
+        int m_Button;
+    };
 }
 

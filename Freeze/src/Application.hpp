@@ -17,10 +17,14 @@ namespace Freeze
         Window* m_Window;
     private:
         void Shutdown();
-        void OnMouseMove(MouseMoveEvent& ev);
-        void OnWindowClose(WindowCloseEvent& ev);
-        void OnWindowResize(WindowResizeEvent& ev);
-        void OnKeyPress(KeyPressedEvent& ev);
-        void OnKeyRelease(KeyReleasedEvent& ev);
+        bool OnMouseMove(MouseMoveEvent& ev);
+        bool OnMouseClick(MouseClickEvent& ev);
+        bool OnMouseRelease(MouseReleaseEvent& ev);
+        bool OnWindowClose(WindowCloseEvent& ev);
+        bool OnWindowResize(WindowResizeEvent& ev);
+        bool OnKeyPress(KeyPressedEvent& ev);
+        bool OnKeyRelease(KeyReleasedEvent& ev);
+        bool OnKeyRepeat(KeyRepeatEvent& ev);
+        void SetEventListeners();
     };
 } // namespace Freeze

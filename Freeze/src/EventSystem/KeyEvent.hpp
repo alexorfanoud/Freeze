@@ -4,10 +4,10 @@
 namespace Freeze {
     class KeyPressedEvent : public Event{
     public:
-        KeyPressedEvent(int code, int repeat = 0) : m_Code(code), m_Repeat(repeat) {}
+        KeyPressedEvent(int code) : m_Code(code){}
         EVENT_TYPE(EventType::KeyPress);
     private:
-        int m_Code, m_Repeat;
+        int m_Code;
     };
 
     class KeyReleasedEvent : public Event{
@@ -17,4 +17,13 @@ namespace Freeze {
     private:
         int m_Code;
     };
+
+    class KeyRepeatEvent : public Event{
+    public:
+        KeyRepeatEvent(int code) : m_Code(code){}
+        EVENT_TYPE(EventType::KeyRepeat);
+    private:
+        int m_Code;
+    };
+
 }

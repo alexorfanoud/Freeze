@@ -3,8 +3,8 @@
 namespace Freeze{
     enum  class EventType{
         None = 0,
-        MouseMove,
-        KeyPress, KeyRelease, 
+        MouseMove, MouseClick, MouseRelease, 
+        KeyPress, KeyRelease, KeyRepeat,
         WindowClose, WindowResize,
     };
 
@@ -12,5 +12,6 @@ namespace Freeze{
     {
     public:
         virtual EventType GetType() const { return EventType::None; }
+        virtual std::string GetName() const { return "EventType::None";}
     };
 }

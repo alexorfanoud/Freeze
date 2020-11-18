@@ -8,22 +8,13 @@
 namespace  Freeze {
     class Window {
     public:
-        using EventFn = typename std::function<void(Event&)>;
     public:
         Window(unsigned int width = 640, unsigned int height = 480, std::string title = "FreezeEngine");
         ~Window();
         void Update();
-        inline void SetOnEventFunction(const EventFn& eventFn) { m_WindowData.OnEvent = eventFn; }
-        
-    private:
-        struct WindowData {
-            unsigned int Width, Height;
-            EventFn OnEvent;
-        };
     private:
         unsigned int m_Width, m_Height;
         std::string m_DisplayTitle;
-        WindowData m_WindowData;
         GLFWwindow* m_Window;
     private:
         int Init();

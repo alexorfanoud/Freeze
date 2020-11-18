@@ -4,8 +4,14 @@ project(Freeze)
 set(root_dir "${CMAKE_SOURCE_DIR}")
 set(FreezeDir "${Freeze_SOURCE_DIR}")
 set(vendor_dir "${FreezeDir}/vendor")
-file(GLOB src_files "${FreezeDir}/src/*.cpp")
-file(GLOB header_files "${FreezeDir}/src/*.hpp")
+file(GLOB src_files 
+    "${FreezeDir}/src/*.cpp"
+    "${FreezeDir}/src/EventSystem/*.cpp"
+    )
+file(GLOB header_files 
+    "${FreezeDir}/src/*.hpp"
+    "${FreezeDir}/src/EventSystem/*.hpp"
+    )
 
 #Freeze Library
 add_library(FreezeLib STATIC

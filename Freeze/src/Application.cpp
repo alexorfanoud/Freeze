@@ -4,37 +4,62 @@
 
 namespace Freeze
 {
-    void Application::OnMouseMove(MouseMoveEvent& ev){
-        std::cout << ev.GetXPos() << ' ' << ev.GetYPos() << '\n';
+    bool Application::OnMouseMove(MouseMoveEvent& ev){
+        std::cout << ev.GetName() << ": " << ev.GetXPos() << ' ' << ev.GetYPos() << '\n';
         //TODO SEND MOVEMENT TO CAMERA
+        return true;
     }
-    void Application::OnWindowClose(WindowCloseEvent& ev){
+    bool Application::OnMouseClick(MouseClickEvent& ev){
+        std::cout << ev.GetName() << ": " << ev.GetKeyCode() << std::endl;;
+        //TODO SEND MOVEMENT TO CAMERA
+        return true;
+    }
+    bool Application::OnMouseRelease(MouseReleaseEvent& ev){
+        std::cout << ev.GetName() << ": " << ev.GetKeyCode() << std::endl;;
+        //TODO SEND MOVEMENT TO CAMERA
+        return true;
+    }
+    bool Application::OnWindowClose(WindowCloseEvent& ev){
+        std::cout << ev.GetName() << std::endl;
         m_Running = false;
+        return true;
     }
-    void Application::OnWindowResize(WindowResizeEvent& ev){
+    bool Application::OnWindowResize(WindowResizeEvent& ev){
        //TODO handle window resize
+        std::cout << ev.GetName() << std::endl;
+        return true;
     }
-    void Application::OnKeyPress(KeyPressedEvent& ev){
+    bool Application::OnKeyPress(KeyPressedEvent& ev){
         //TODO handle key input
-        std::cout << "key pressed" << std::endl;
+        std::cout << ev.GetName() << std::endl;
+        return true;
     }
-    void Application::OnKeyRelease(KeyReleasedEvent& ev){
+    bool Application::OnKeyRelease(KeyReleasedEvent& ev){
         //TODO handle key input
+        std::cout << ev.GetName() << std::endl;
+        return true;
     }
-    void Application::OnEvent(Event& event) {
-        Dispatcher dispatcher(&event);
-        dispatcher.Dispatch<MouseMoveEvent>(BIND_EVENT_FUNC(Application::OnMouseMove));
-        dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FUNC(Application::OnWindowClose));
-        dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FUNC(Application::OnWindowResize));
-        dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNC(Application::OnKeyPress));
-        dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FUNC(Application::OnKeyRelease));
+    bool Application::OnKeyRepeat(KeyRepeatEvent& ev){
+        //TODO handle key input
+        std::cout << ev.GetName() << std::endl;
+        return true;
+    }
+    void Application::SetEventListeners(){
+        EventHandler::AttachListener<MouseMoveEvent>(BIND_EVENT_FUNC(Application::OnMouseMove));
+        EventHandler::AttachListener<MouseClickEvent>(BIND_EVENT_FUNC(Application::OnMouseClick));
+        EventHandler::AttachListener<MouseReleaseEvent>(BIND_EVENT_FUNC(Application::OnMouseRelease));
+        EventHandler::AttachListener<WindowCloseEvent>(BIND_EVENT_FUNC(Application::OnWindowClose));
+        EventHandler::AttachListener<WindowResizeEvent>(BIND_EVENT_FUNC(Application::OnWindowResize));
+        EventHandler::AttachListener<KeyPressedEvent>(BIND_EVENT_FUNC(Application::OnKeyPress));
+        EventHandler::AttachListener<KeyReleasedEvent>(BIND_EVENT_FUNC(Application::OnKeyRelease));
+        EventHandler::AttachListener<KeyRepeatEvent>(BIND_EVENT_FUNC(Application::OnKeyRepeat));
     }
 
     Application::Application()
     :m_Running(true)
     {
+        SetEventListeners();
         m_Window = new Window();
-        m_Window->SetOnEventFunction(BIND_EVENT_FUNC(Application::OnEvent));
     }
     Application::~Application()
     {
