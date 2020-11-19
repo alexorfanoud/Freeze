@@ -1,7 +1,6 @@
 #include "Core.hpp"
 #include "Window.hpp"
 
-
 namespace Freeze {
     Window::Window(unsigned int width, unsigned int height, std::string title)
     : m_Width(width), m_Height(height), m_DisplayTitle(title)
@@ -24,6 +23,7 @@ namespace Freeze {
             return -1;
         }
         glfwMakeContextCurrent(m_Window);
+        glViewport(0,0, m_Width, m_Height);
 
         SetCallbacks();
 
@@ -102,12 +102,12 @@ namespace Freeze {
 
     void Window::Update()
     {
-        glClearColor(0.5f, 0.2f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+       
 
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
-
+       glClearColor(0.5f, 0.2f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         /* Poll for and process events */
         glfwPollEvents();
     }

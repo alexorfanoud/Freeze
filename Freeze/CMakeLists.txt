@@ -8,16 +8,24 @@ file(GLOB src_files
     "${FreezeDir}/src/*.cpp"
     "${FreezeDir}/src/EventSystem/*.cpp"
     "${FreezeDir}/vendor/glad/src/glad.c"
+    "${FreezeDir}/src/OpenGL/*.cpp"
+    "${FreezeDir}/vendor/stb_image/stb_image.cpp"
     )
 file(GLOB header_files 
     "${FreezeDir}/src/*.hpp"
     "${FreezeDir}/src/EventSystem/*.hpp"
+    "${FreezeDir}/src/OpenGL/*.hpp"
+    "${FreezeDir}/vendor/stb_image/stb_image.h"
+    )
+file(GLOB glsl_files
+    "${FreezeDir}/src/resources/shaders/basic/*.glsl"
     )
 
 #Freeze Library
 add_library(FreezeLib STATIC
     "${src_files}"
     "${header_files}"
+    "${glsl_files}"
 )
 
 #Dependencies
@@ -30,6 +38,8 @@ add_library(FreezeLib STATIC
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     add_subdirectory("${vendor_dir}/glfw")
     target_link_libraries(FreezeLib glfw)
+    #glm
+    add_subdirectory("${vendor_dir}/glm")
     #OPENGL
     find_package(OpenGL REQUIRED)
     target_link_libraries(FreezeLib OpenGL::GL)
@@ -40,6 +50,8 @@ target_include_directories(FreezeLib PRIVATE
      "${vendor_dir}/spdlog/include"
      "${vendor_dir}/glfw/include"
      "${vendor_dir}/glad/include"
+     "${vendor_dir}/glm"
+     "${vendor_dir}/"
      )
 
 #Precompiled Headers ------Requires CMAKE 3.16 OR HIGHER----------

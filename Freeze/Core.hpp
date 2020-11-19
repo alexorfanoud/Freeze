@@ -1,4 +1,6 @@
-#include "pch.hpp"
+#pragma once 
+
+#include<iostream>
 #define BIND_EVENT_FUNC(x) std::bind(&x, this, std::placeholders::_1)
 //Linux Platform
 #include <signal.h>

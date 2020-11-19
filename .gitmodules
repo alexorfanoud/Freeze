@@ -4,3 +4,6 @@
 [submodule "Freeze/vendor/glfw"]
 	path = Freeze/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Freeze/vendor/glm"]
+	path = Freeze/vendor/glm
+	url = https://github.com/g-truc/glm.git

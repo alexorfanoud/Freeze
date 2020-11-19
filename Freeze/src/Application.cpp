@@ -4,6 +4,14 @@
 #include "Core.hpp"
 #include "spdlog/spdlog.h"
 
+#include "OpenGL/attributeLayout.hpp"
+#include "OpenGL/vertexArray.hpp"
+#include "OpenGL/vertexBuffer.hpp"
+#include "OpenGL/indexBuffer.hpp"
+#include "OpenGL/shader.hpp"
+#include "OpenGL/time.hpp"
+#include "OpenGL/misc.hpp"
+
 namespace Freeze
 {
     bool Application::OnMouseMove(MouseMoveEvent& ev){
@@ -75,20 +83,54 @@ namespace Freeze
     void Application::Run()
     {
         spdlog::info("Running...");
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f,
+             0.0f,  0.5f, 0.0f
+        };
+        unsigned int indices[] = {
+                    0, 1, 2,
+                    // 2, 3, 0
+                };
+
+    VertexArray VAO;
+    VAO.Bind();
+
+    VertexBuffer VBO;
+    VBO.Bind();
+    VBO.AddData(sizeof(vertices), vertices, 9);
+
+
+    IndexBuffer IBO;
+    IBO.Bind();
+    IBO.AddData(sizeof(indices), indices, 3);
+
+    AttributeLayout layout;
+    layout.AddAttribute<float>(3);
+    VAO.AddLayout(layout);
+  
+    
+    ShaderProgram shader("../Freeze/src/resources/shaders/basic/vertex.glsl", "../Freeze/src/resources/shaders/basic/fragment.glsl");
+    shader.Bind();
+
+    
+    Time time;
+
         while (m_Running)
         {
-            m_Window->Update();
+            m_Window->Update(); 
+            glCall(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr));
             
         }
     }
 
     void Application::Init(){
         SetEventListeners();
-        if (!gladLoadGL())
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
-            printf("Something went wrong!\n");
-            exit(-1);
-        }
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return ;
+        }  
     }
 
 } // namespace Freeze
