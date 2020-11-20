@@ -18,8 +18,8 @@ void PrintArgs(Args&&... args){
 #define FZ_EVENT_RESOLVED true
 #define FZ_EVENT_UNRESOLVED false
 //CameraController
-#define FZ_DEFAULT_SENS_X 10.0f
-#define FZ_DEFAULT_SENS_Y 10.0f
+#define FZ_DEFAULT_SENS_X 5.0f
+#define FZ_DEFAULT_SENS_Y 5.0f
 #define FZ_DEFAULT_CAM_MOVESPEED 10.0f
 #define FZ_PITCH_MAX 80.0f
 #define FZ_PITCH_MIN -80.0f
