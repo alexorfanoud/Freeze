@@ -13,6 +13,8 @@
 #include "OpenGL/misc.hpp"
 #include "OpenGL/cameraController.hpp"
 
+#include "MeshManager.hpp"
+
 namespace Freeze
 {
     bool Application::OnWindowClose(WindowCloseEvent& ev){
@@ -53,81 +55,60 @@ namespace Freeze
     {
         //TODO ABSTRACT VISUALS INTO SCENES ?
         spdlog::info("Running...");
-        float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        std::vector<glm::vec3> centers ;
+        float res = 15.0f;
+        float length = 0.7f;
+        glm::vec3 steps = glm::vec3(1.0f);
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    };
-
-    CameraController camera;
-    VertexArray VAO;
-    VAO.Bind();
-
-    VertexBuffer VBO;
-    VBO.Bind();
-    VBO.AddData(sizeof(vertices), vertices, 36);
-
-    AttributeLayout layout;
-    layout.AddAttribute<float>(3);
-    layout.AddAttribute<float>(3);
-    VAO.AddLayout(layout);
-  
-    
-    ShaderProgram shader("../Freeze/src/resources/shaders/basic/vertex.glsl", "../Freeze/src/resources/shaders/basic/fragment.glsl");
-    shader.Bind();
-
-    
-    Time time;
-
-        while (m_Running)
+        for (float x = 0.0f; x < res; x += steps.x)
         {
-            m_Window->Update(); 
-            float delta = time.DeltaTime();
-            camera.Update(delta);
-            shader.SetMVP(glm::mat4(1.0f), camera.GetViewMatrix(), glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 100.0f));
-            glCall(glDrawArrays(GL_TRIANGLES, 0, 36));
-            
+            for (float y = 0.0f; y < res; y += steps.y)
+            {   
+                for (float z = 0.0f; z < res; z += steps.z)
+                {
+                    centers.emplace_back(glm::vec3(
+                        x,y,z
+                    ));
+                }
+            }
         }
-    }
 
+        const auto& [vertices, indices] = MeshManager::CreateCubesData(centers.size(), length, centers);
+        
+        CameraController camera;
+        VertexArray VAO;
+        VAO.Bind();
+        VertexBuffer VBO;
+        VBO.Bind();
+        VBO.AddData<float>(vertices, 8 * centers.size());
+
+        IndexBuffer IBO;
+        IBO.Bind();
+        IBO.AddData<unsigned int>(indices, 36 * centers.size());
+
+        AttributeLayout layout;
+        layout.AddAttribute<float>(3);
+        VAO.AddLayout(layout);
+    
+        
+        ShaderProgram shader("../Freeze/src/resources/shaders/basic/vertex.glsl", "../Freeze/src/resources/shaders/basic/fragment.glsl");
+        shader.Bind();
+        shader.SetUniform1f("resolution", res);
+
+        
+        Time time;
+
+            while (m_Running)
+            {
+                m_Window->Update(); 
+                float delta = time.DeltaTime();
+                camera.Update(delta);
+                shader.SetMVP(glm::mat4(1.0f), camera.GetViewMatrix(), glm::perspective(glm::radians(50.0f), FZ_DEFAULT_WINDOW_WIDTH/FZ_DEFAULT_WINDOW_HEIGHT, 0.1f, 100.0f));
+        
+                glCall(glDrawElements(GL_TRIANGLES, 36 * centers.size(), GL_UNSIGNED_INT, nullptr));
+                
+            }
+        }
     void Application::Init(){
         SetEventListeners();
         bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
