@@ -17,9 +17,6 @@ file(GLOB header_files
     "${FreezeDir}/src/OpenGL/*.hpp"
     "${FreezeDir}/vendor/stb_image/stb_image.h"
     )
-file(GLOB glsl_files
-    "${FreezeDir}/src/resources/shaders/basic/*.glsl"
-    )
 
 #Freeze Library
 add_library(FreezeLib STATIC
@@ -47,6 +44,7 @@ add_library(FreezeLib STATIC
 #Includes
 target_include_directories(FreezeLib PRIVATE
      "${FreezeDir}"
+     "${FreezeDir}/src"
      "${vendor_dir}/spdlog/include"
      "${vendor_dir}/glfw/include"
      "${vendor_dir}/glad/include"

@@ -4,7 +4,7 @@ namespace Freeze{
     enum  class EventType{
         None = 0,
         MouseMove, MouseClick, MouseRelease, 
-        KeyPress, KeyRelease, KeyRepeat,
+        KeyPress, KeyRelease,
         WindowClose, WindowResize,
     };
 

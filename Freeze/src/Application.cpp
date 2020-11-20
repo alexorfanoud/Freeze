@@ -11,58 +11,27 @@
 #include "OpenGL/shader.hpp"
 #include "OpenGL/time.hpp"
 #include "OpenGL/misc.hpp"
+#include "OpenGL/cameraController.hpp"
 
 namespace Freeze
 {
-    bool Application::OnMouseMove(MouseMoveEvent& ev){
-        std::cout << ev.GetName() << ": " << ev.GetXPos() << ' ' << ev.GetYPos() << '\n';
-        //TODO SEND MOVEMENT TO CAMERA
-        return true;
-    }
-    bool Application::OnMouseClick(MouseClickEvent& ev){
-        std::cout << ev.GetName() << ": " << ev.GetKeyCode() << std::endl;;
-        //TODO SEND MOVEMENT TO CAMERA
-        return true;
-    }
-    bool Application::OnMouseRelease(MouseReleaseEvent& ev){
-        std::cout << ev.GetName() << ": " << ev.GetKeyCode() << std::endl;;
-        //TODO SEND MOVEMENT TO CAMERA
-        return true;
-    }
     bool Application::OnWindowClose(WindowCloseEvent& ev){
-        std::cout << ev.GetName() << std::endl;
         m_Running = false;
-        return true;
+        return FZ_EVENT_RESOLVED;
     }
     bool Application::OnWindowResize(WindowResizeEvent& ev){
        //TODO handle window resize
         std::cout << ev.GetName() << std::endl;
-        return true;
+        return FZ_EVENT_RESOLVED;
     }
     bool Application::OnKeyPress(KeyPressedEvent& ev){
-        //TODO handle key input
-        std::cout << ev.GetName() << std::endl;
-        return true;
-    }
-    bool Application::OnKeyRelease(KeyReleasedEvent& ev){
-        //TODO handle key input
-        std::cout << ev.GetName() << std::endl;
-        return true;
-    }
-    bool Application::OnKeyRepeat(KeyRepeatEvent& ev){
-        //TODO handle key input
-        std::cout << ev.GetName() << std::endl;
-        return true;
+        if(ev.GetKeyCode() == GLFW_KEY_ESCAPE) { m_Running = false; return FZ_EVENT_RESOLVED; }
+        return FZ_EVENT_UNRESOLVED;
     }
     void Application::SetEventListeners(){
-        EventHandler::AttachListener<MouseMoveEvent>(BIND_EVENT_FUNC(Application::OnMouseMove));
-        EventHandler::AttachListener<MouseClickEvent>(BIND_EVENT_FUNC(Application::OnMouseClick));
-        EventHandler::AttachListener<MouseReleaseEvent>(BIND_EVENT_FUNC(Application::OnMouseRelease));
         EventHandler::AttachListener<WindowCloseEvent>(BIND_EVENT_FUNC(Application::OnWindowClose));
         EventHandler::AttachListener<WindowResizeEvent>(BIND_EVENT_FUNC(Application::OnWindowResize));
         EventHandler::AttachListener<KeyPressedEvent>(BIND_EVENT_FUNC(Application::OnKeyPress));
-        EventHandler::AttachListener<KeyReleasedEvent>(BIND_EVENT_FUNC(Application::OnKeyRelease));
-        EventHandler::AttachListener<KeyRepeatEvent>(BIND_EVENT_FUNC(Application::OnKeyRepeat));
     }
 
     Application::Application()
@@ -82,30 +51,62 @@ namespace Freeze
 
     void Application::Run()
     {
+        //TODO ABSTRACT VISUALS INTO SCENES ?
         spdlog::info("Running...");
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.0f,  0.5f, 0.0f
-        };
-        unsigned int indices[] = {
-                    0, 1, 2,
-                    // 2, 3, 0
-                };
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
 
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+    CameraController camera;
     VertexArray VAO;
     VAO.Bind();
 
     VertexBuffer VBO;
     VBO.Bind();
-    VBO.AddData(sizeof(vertices), vertices, 9);
-
-
-    IndexBuffer IBO;
-    IBO.Bind();
-    IBO.AddData(sizeof(indices), indices, 3);
+    VBO.AddData(sizeof(vertices), vertices, 36);
 
     AttributeLayout layout;
+    layout.AddAttribute<float>(3);
     layout.AddAttribute<float>(3);
     VAO.AddLayout(layout);
   
@@ -119,18 +120,18 @@ namespace Freeze
         while (m_Running)
         {
             m_Window->Update(); 
-            glCall(glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr));
+            float delta = time.DeltaTime();
+            camera.Update(delta);
+            shader.SetMVP(glm::mat4(1.0f), camera.GetViewMatrix(), glm::perspective(glm::radians(50.0f), 1.0f, 0.1f, 100.0f));
+            glCall(glDrawArrays(GL_TRIANGLES, 0, 36));
             
         }
     }
 
     void Application::Init(){
         SetEventListeners();
-        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-        {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return ;
-        }  
+        bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        ASSERT(status, "Failed to initialize GLAD");
     }
 
 } // namespace Freeze

@@ -24,6 +24,9 @@ namespace Freeze {
         }
         glfwMakeContextCurrent(m_Window);
         glViewport(0,0, m_Width, m_Height);
+        glfwSwapInterval(1);
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glEnable(GL_DEPTH_TEST);    
 
         SetCallbacks();
 
@@ -84,7 +87,7 @@ namespace Freeze {
             }
             case GLFW_REPEAT:
             {
-                KeyRepeatEvent event(key);
+                KeyPressedEvent event(key, true);
                 EventHandler::ResolveEvent(event);
                 break;
             }
@@ -107,7 +110,7 @@ namespace Freeze {
         /* Swap front and back buffers */
         glfwSwapBuffers(m_Window);
        glClearColor(0.5f, 0.2f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         /* Poll for and process events */
         glfwPollEvents();
     }

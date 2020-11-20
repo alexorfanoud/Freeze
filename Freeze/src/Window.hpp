@@ -2,14 +2,15 @@
 
 #include "pch.hpp"
 #include "EventSystem/Base.hpp"
-#include<functional>
+#include "pch.hpp"
+#include "Core.hpp"
 #include <GLFW/glfw3.h>
 
 namespace  Freeze {
     class Window {
     public:
     public:
-        Window(unsigned int width = 640, unsigned int height = 480, std::string title = "FreezeEngine");
+        Window(unsigned int width = FZ_DEFAULT_WINDOW_WIDTH, unsigned int height = FZ_DEFAULT_WINDOW_HEIGHT, std::string title = "FreezeEngine");
         ~Window();
         void Update();
     private:

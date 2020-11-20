@@ -5,8 +5,10 @@
 
 #define glCall(x) ClearError(); x; PrintError(#x, __FILE__, __LINE__);
 
-std::string TranslateErrorCode(unsigned int code);
-void ClearError();
-void PrintError(std::string func, std::string file, int line);
+namespace Freeze {
+    std::string TranslateErrorCode(unsigned int code);
+    void ClearError();
+    void PrintError(std::string func, std::string file, int line);
+}
 
 

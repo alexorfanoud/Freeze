@@ -25,7 +25,6 @@ namespace Freeze
         bool OnWindowResize(WindowResizeEvent& ev);
         bool OnKeyPress(KeyPressedEvent& ev);
         bool OnKeyRelease(KeyReleasedEvent& ev);
-        bool OnKeyRepeat(KeyRepeatEvent& ev);
         void SetEventListeners();
     };
 } // namespace Freeze

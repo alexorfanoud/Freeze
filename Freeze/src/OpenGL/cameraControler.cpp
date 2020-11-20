@@ -1,63 +1,88 @@
 #include "pch.hpp"
 
 #include "cameraController.hpp"
+#include "Core.hpp"
 
+namespace Freeze
+{
+    bool CameraController::OnMouseMove(MouseMoveEvent& ev){
+        static bool firstMove = true;
 
-CameraController::CameraController(
-    GLFWwindow* window,
-    float moveSpeed, float senseX , float senseY , float yaw , float pitch ,
-    glm::vec3 camPos , glm::vec3 camFront , glm::vec3 worldUp , 
-    glm::vec2 mousePos, glm::vec2 lastMousePos ) : 
-    m_moveSpeed(moveSpeed), m_SensX(senseX), m_SensY(senseY), m_yaw(yaw), m_pitch(pitch),   
-    m_cameraPos(camPos), m_cameraFront(camFront), m_worldUp(worldUp),
-    m_mousePos(mousePos), m_lastMousePos(lastMousePos)
+        glm::vec2 CurrentMousePos = glm::vec2(ev.GetXPos(), ev.GetYPos());
+        glm::vec2 PositionDif = CurrentMousePos - m_MousePos;
+        m_MousePos = CurrentMousePos;
+
+        if(firstMove) {
+            firstMove = false;
+            return FZ_EVENT_RESOLVED;
+        }
+        
+        m_Yaw += m_SenseX * PositionDif.x * m_DeltaTime;
+        m_Pitch -= m_SenseY * PositionDif.y * m_DeltaTime;
+        if(m_Pitch > FZ_PITCH_MAX) m_Pitch = FZ_PITCH_MAX;
+        if(m_Pitch < FZ_PITCH_MIN) m_Pitch = FZ_PITCH_MIN;
+
+        return FZ_EVENT_RESOLVED;
+    };
+
+    bool CameraController::OnKeyPress(KeyPressedEvent& ev){
+        if(ev.GetKeyCode() == GLFW_KEY_W) m_MoveDirections.front = 1;
+        if(ev.GetKeyCode() == GLFW_KEY_S) m_MoveDirections.back = 1;
+        if(ev.GetKeyCode() == GLFW_KEY_D) m_MoveDirections.right = 1;
+        if(ev.GetKeyCode() == GLFW_KEY_A) m_MoveDirections.left = 1;
+
+        return FZ_EVENT_RESOLVED;
+    };
+    bool CameraController::OnKeyRelease(KeyReleasedEvent& ev){
+        if(ev.GetKeyCode() == GLFW_KEY_W)  m_MoveDirections.front = 0;
+        if(ev.GetKeyCode() == GLFW_KEY_S)  m_MoveDirections.back = 0;
+        if(ev.GetKeyCode() == GLFW_KEY_D)  m_MoveDirections.right = 0; 
+        if(ev.GetKeyCode() == GLFW_KEY_A)  m_MoveDirections.left = 0; 
+
+        return FZ_EVENT_RESOLVED;
+    };
+
+    CameraController::CameraController(
+        float moveSpeed,
+        float senseX, float senseY,
+        float yaw, float pitch,
+        glm::vec3 camPos, glm::vec3 camFront, glm::vec3 worldUp,
+        glm::vec2 mousePos) :
+        m_MoveSpeed(moveSpeed),
+        m_SenseX(senseX), m_SenseY(senseY),
+        m_Yaw(yaw), m_Pitch(pitch),
+        m_CameraPos(camPos), m_CameraFront(camFront), m_WorldUp(worldUp),
+        m_MousePos(mousePos)
+        {
+            Init();
+        }
+
+    void CameraController::UpdatePosition()
     {
-        double xpos, ypos;
-
-        glfwGetCursorPos(window, &xpos, &ypos);
-        SetMousePos(glm::vec2(xpos, ypos));
-        ResetMouse();
+        m_CameraPos += m_MoveDirections.front * m_CameraFront * m_MoveSpeed * m_DeltaTime; 
+        m_CameraPos -= m_MoveDirections.back * m_CameraFront * m_MoveSpeed * m_DeltaTime;
+        m_CameraPos += m_MoveDirections.right * glm::normalize(glm::cross(m_CameraFront, m_WorldUp)) * m_MoveSpeed * m_DeltaTime;
+        m_CameraPos -= m_MoveDirections.left * glm::normalize(glm::cross(m_CameraFront, m_WorldUp)) * m_MoveSpeed * m_DeltaTime;
+    }
+    void CameraController::UpdateRotation()
+    {
+        m_CameraFront = glm::vec3(
+            glm::cos(glm::radians(m_Pitch)) * glm::cos(glm::radians(m_Yaw)),
+            glm::sin(glm::radians(m_Pitch)),
+            glm::cos(glm::radians(m_Pitch)) * glm::sin(glm::radians(m_Yaw))
+        );
+    }
+    void CameraController::Update(float deltaTime)
+    {
+        m_DeltaTime = deltaTime;
+        UpdateRotation();
+        UpdatePosition();
+    }
+    void CameraController::Init()
+    {
+        EventHandler::AttachListener<MouseMoveEvent>(BIND_EVENT_FUNC(CameraController::OnMouseMove));
+        EventHandler::AttachListener<KeyPressedEvent>(BIND_EVENT_FUNC(CameraController::OnKeyPress));
+        EventHandler::AttachListener<KeyReleasedEvent>(BIND_EVENT_FUNC(CameraController::OnKeyRelease));
     }
 
-void CameraController::Update(float deltaTime, GLFWwindow* window){
-    UpdateRotation(deltaTime, window);
-    UpdatePosition(deltaTime, window);
-}
-
-void CameraController::UpdatePosition(float deltaTime, GLFWwindow* window){
-
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) m_moveDirections.front = 1;    else m_moveDirections.front = 0;
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) m_moveDirections.back = 1;     else m_moveDirections.back = 0;
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) m_moveDirections.right = 1;    else m_moveDirections.right = 0;
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) m_moveDirections.left = 1;     else m_moveDirections.left = 0;
-
-    if(m_moveDirections.front) m_cameraPos += m_cameraFront * m_moveSpeed * deltaTime;
-    if(m_moveDirections.back) m_cameraPos -= m_cameraFront * m_moveSpeed * deltaTime;
-    if(m_moveDirections.right) m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_worldUp)) * m_moveSpeed * deltaTime;
-    if(m_moveDirections.left) m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_worldUp)) * m_moveSpeed * deltaTime;
-}
-
-void CameraController::UpdateRotation(float deltaTime, GLFWwindow* window)
-{
-    static bool firstMove = true;
-    double xpos, ypos;
-
-    glfwGetCursorPos(window, &xpos, &ypos);
-    SetMousePos(glm::vec2(xpos,ypos));
-    if(firstMove ) {
-        if(xpos==m_lastMousePos.x && ypos==m_lastMousePos.y) return;
-        ResetMouse(); 
-        firstMove = false;
-        }
-    glm::vec2 mousePosDif;
-    mousePosDif = m_mousePos - m_lastMousePos;
-    m_yaw += mousePosDif.x * m_SensX * deltaTime;
-    m_pitch -= mousePosDif.y * m_SensY * deltaTime;
-    m_lastMousePos = m_mousePos;
-
-    m_cameraFront = glm::normalize(
-        glm::vec3(
-            cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch)),
-            sin(glm::radians(m_pitch)),
-            sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch))));
-}
+} // namespace Freeze
