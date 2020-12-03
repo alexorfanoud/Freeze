@@ -3,6 +3,9 @@
 #include "Application.hpp"
 #include "Core.hpp"
 #include "spdlog/spdlog.h"
+#include "imgui.h"
+
+#include "math/math.hpp"
 
 #include "OpenGL/attributeLayout.hpp"
 #include "OpenGL/vertexArray.hpp"
@@ -56,21 +59,16 @@ namespace Freeze
         //TODO ABSTRACT VISUALS INTO SCENES ?
         spdlog::info("Running...");
         std::vector<glm::vec3> centers ;
-        float res = 15.0f;
-        float length = 0.7f;
-        glm::vec3 steps = glm::vec3(1.0f);
+        float res = 5.0f;
+        float length = 0.05f;
+        glm::vec3 steps = glm::vec3(0.02f);
 
-        for (float x = 0.0f; x < res; x += steps.x)
+        for (float x = -res/2.0f; x < res/2.0f; x += steps.x)
         {
-            for (float y = 0.0f; y < res; y += steps.y)
-            {   
-                for (float z = 0.0f; z < res; z += steps.z)
+                for (float z = -res/2.0f; z < res/2.0f; z += steps.z)
                 {
-                    centers.emplace_back(glm::vec3(
-                        x,y,z
-                    ));
+                    centers.emplace_back(Graphs::ripple(x, z));
                 }
-            }
         }
 
         const auto& [vertices, indices] = MeshManager::CreateCubesData(centers.size(), length, centers);
@@ -97,14 +95,16 @@ namespace Freeze
 
         
         Time time;
-
+        float rotation = 0.0f;
             while (m_Running)
             {
                 m_Window->Update(); 
                 float delta = time.DeltaTime();
                 camera.Update(delta);
-                shader.SetMVP(glm::mat4(1.0f), camera.GetViewMatrix(), glm::perspective(glm::radians(50.0f), FZ_DEFAULT_WINDOW_WIDTH/FZ_DEFAULT_WINDOW_HEIGHT, 0.1f, 100.0f));
-        
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::rotate(model, glm::radians(rotation++), glm::vec3(0.0f, 1.0f, 0.0f));
+                shader.SetMVP(model, camera.GetViewMatrix(), glm::perspective(glm::radians(50.0f), FZ_DEFAULT_WINDOW_WIDTH/FZ_DEFAULT_WINDOW_HEIGHT, 0.1f, 300.0f));
+                shader.SetUniform1f("time", float(glfwGetTime()));
                 glCall(glDrawElements(GL_TRIANGLES, 36 * centers.size(), GL_UNSIGNED_INT, nullptr));
                 
             }

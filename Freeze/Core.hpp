@@ -20,7 +20,7 @@ void PrintArgs(Args&&... args){
 //CameraController
 #define FZ_DEFAULT_SENS_X 5.0f
 #define FZ_DEFAULT_SENS_Y 5.0f
-#define FZ_DEFAULT_CAM_MOVESPEED 10.0f
+#define FZ_DEFAULT_CAM_MOVESPEED 20.0f
 #define FZ_PITCH_MAX 80.0f
 #define FZ_PITCH_MIN -80.0f
 //Window
