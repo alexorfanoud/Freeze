@@ -1,5 +1,5 @@
 # Freeze
-C++ Application for rendering geometry with camera controller.
+OpenGL application capable of rendering complex geometry, with a functional camera controller and event system.
 <p>
 <img src="https://github.com/alexorfanoud/Freeze/blob/master/md/gifs/ripple_highres_final.gif" width="450" height="450" />
 </p>
