@@ -190,9 +190,10 @@ namespace Freeze
 
     void ShaderProgram::CreateShader(const char *vertexFilepath, const char *fragmentFilepath) const
     {
-
-        std::string vertexSource = ParseShader(vertexFilepath);
-        std::string fragmentSource = ParseShader(fragmentFilepath);
+        std::string v_path = FZ_ROOT_PATH + vertexFilepath;
+        std::string f_path = FZ_ROOT_PATH + fragmentFilepath;
+        std::string vertexSource = ParseShader(v_path.c_str());
+        std::string fragmentSource = ParseShader(f_path.c_str());
 
         unsigned int vs = CompileShader(vertexSource, GL_VERTEX_SHADER);
         unsigned int fs = CompileShader(fragmentSource, GL_FRAGMENT_SHADER);
@@ -208,7 +209,7 @@ namespace Freeze
     std::string ShaderProgram::ParseShader(const char *filepath) const
     {
         std::ifstream stream(filepath);
-        ASSERT(stream.is_open(), "Could not open file, filepath should be relative to executable location!");
+        ASSERT(stream.is_open(), "Could not open shader file from path: ", filepath, "Check that your FZ_ROOT_PATH is configured correctly inside Core.hpp", "Path should be relative to root of project.");
         std::string line;
         std::string source;
         while (std::getline(stream, line))

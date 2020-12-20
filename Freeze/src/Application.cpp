@@ -88,7 +88,7 @@ namespace Freeze
         VAO.AddLayout(layout);
     
         
-        ShaderProgram shader("../Freeze/src/resources/shaders/basic/vertex.glsl", "../Freeze/src/resources/shaders/basic/fragment.glsl");
+        ShaderProgram shader("Freeze/src/resources/shaders/basic/vertex.glsl", "Freeze/src/resources/shaders/basic/fragment.glsl");
         shader.Bind();
         shader.SetUniform1f("resolution", res);
 
