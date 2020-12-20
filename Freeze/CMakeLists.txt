@@ -36,9 +36,6 @@ add_library(FreezeLib STATIC
     target_link_libraries(FreezeLib glfw)
     #glm
     add_subdirectory("${vendor_dir}/glm")
-    #ImGui
-    add_subdirectory("${vendor_dir}/imgui")
-    target_link_libraries(FreezeLib imgui)
     #OPENGL
     find_package(OpenGL REQUIRED)
     target_link_libraries(FreezeLib OpenGL::GL)
@@ -51,7 +48,6 @@ target_include_directories(FreezeLib PRIVATE
      "${vendor_dir}/glfw/include"
      "${vendor_dir}/glad/include"
      "${vendor_dir}/glm"
-     "${vendor_dir}/imgui"
      "${vendor_dir}/"
      )
 

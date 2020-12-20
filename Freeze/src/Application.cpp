@@ -3,7 +3,6 @@
 #include "Application.hpp"
 #include "Core.hpp"
 #include "spdlog/spdlog.h"
-#include "imgui.h"
 
 #include "math/math.hpp"
 

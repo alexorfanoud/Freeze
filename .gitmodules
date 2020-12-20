@@ -7,6 +7,3 @@
 [submodule "Freeze/vendor/glm"]
 	path = Freeze/vendor/glm
 	url = https://github.com/g-truc/glm
-[submodule "Freeze/vendor/imgui"]
-	path = Freeze/vendor/imgui
-	url = https://github.com/ocornut/imgui
